@@ -1,0 +1,31 @@
+{
+  "name": "bookings-project",
+  "version": "1.0.0",
+  "description": "A sample project using node and mysql",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DazaTovarJ/bookings-project.git"
+  },
+  "keywords": [
+    "bookings"
+  ],
+  "author": "Jaime Daza",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DazaTovarJ/bookings-project/issues"
+  },
+  "homepage": "https://github.com/DazaTovarJ/bookings-project#readme",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mysql2": "^3.2.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
