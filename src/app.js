@@ -2,6 +2,7 @@
 // Dependencies
 import express from "express";
 import {appConfig} from "./config/index.js";
+import router from "./routes/index.js";
 // const routes = require('./routes');
 
 const app = express();
@@ -11,10 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 // Routes
-// app.use('/api', routes);
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
+app.use("/", router);
 
 // Catch all other routes and return the index file
 app.get("*", (req, res) => {
