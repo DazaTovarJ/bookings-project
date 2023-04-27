@@ -28,7 +28,7 @@ router.post("/", async (req, res) => {
       room_id: room,
     });
 
-    return res.json({message: "Booking created"});
+    return res.status(201).json({message: "Booking created"});
   } catch (e) {
     return res.status(500).json({message: e.message});
   }
