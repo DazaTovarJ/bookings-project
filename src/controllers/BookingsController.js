@@ -18,6 +18,30 @@ router.post("/", async (req, res) => {
     return res.status(400).json({message: "Missing required fields"});
   }
 
+  if (new Date(booking_date).toString() === "Invalid Date") {
+    return res.status(400).json({message: "Invalid booking date"});
+  }
+
+  if (new Date(check_in).toString() === "Invalid Date") {
+    return res.status(400).json({message: "Invalid check in date"});
+  }
+
+  if (new Date(check_out).toString() === "Invalid Date") {
+    return res.status(400).json({message: "Invalid check out date"});
+  }
+
+  if (new Date(booking_date) < new Date()) {
+    return res
+      .status(400)
+      .json({message: "Booking date must be in the future"});
+  }
+
+  if (new Date(check_in) > new Date(check_out)) {
+    return res
+      .status(400)
+      .json({message: "Check in date must be before check out date"});
+  }
+
   try {
     await createBooking({
       client_name: name,
@@ -40,6 +64,27 @@ router.patch("/:id", async (req, res) => {
   }
 
   const {name, phone, booking_date, check_in, check_out, room} = req.body;
+
+  if (
+    booking_date != undefined &&
+    new Date(booking_date).toString() === "Invalid Date"
+  ) {
+    return res.status(400).json({message: "Invalid booking date"});
+  }
+
+  if (
+    check_in != undefined &&
+    new Date(check_in).toString() === "Invalid Date"
+  ) {
+    return res.status(400).json({message: "Invalid check in date"});
+  }
+
+  if (
+    check_out != undefined &&
+    new Date(check_out).toString() === "Invalid Date"
+  ) {
+    return res.status(400).json({message: "Invalid check out date"});
+  }
 
   const bookingToUpdate = {
     client_name: name,
