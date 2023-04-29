@@ -35,6 +35,10 @@ router.post("/", async (req, res) => {
 });
 
 router.patch("/:id", async (req, res) => {
+  if (!req.params.id || Number.isNaN(req.params.id)) {
+    return res.status(400).json({message: "Invalid booking id"});
+  }
+
   const {name, phone, booking_date, check_in, check_out, room} = req.body;
 
   const bookingToUpdate = {
@@ -65,6 +69,10 @@ router.patch("/:id", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
+  if (!req.params.id || Number.isNaN(req.params.id)) {
+    return res.status(400).json({message: "Invalid booking id"});
+  }
+
   try {
     let deleted = await deleteBooking(req.params.id);
 

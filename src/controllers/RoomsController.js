@@ -18,6 +18,10 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
+  if (!req.params.id || Number.isNaN(req.params.id)) {
+    return res.status(400).json({message: "Invalid booking id"});
+  }
+
   try {
     const room = await getRoomById(req.params.id);
 
