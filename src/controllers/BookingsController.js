@@ -30,7 +30,7 @@ router.post("/", async (req, res) => {
     return res.status(400).json({message: "Invalid check out date"});
   }
 
-  if (new Date(booking_date) < new Date()) {
+  if (new Date(booking_date) >= new Date()) {
     return res
       .status(400)
       .json({message: "Booking date must be in the future"});
