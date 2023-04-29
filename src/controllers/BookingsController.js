@@ -35,7 +35,7 @@ router.post("/", async (req, res) => {
 });
 
 router.patch("/:id", async (req, res) => {
-  if (!req.params.id || Number.isNaN(req.params.id)) {
+  if (!req.params.id || Number.isNaN(Number(req.params.id))) {
     return res.status(400).json({message: "Invalid booking id"});
   }
 
@@ -56,6 +56,10 @@ router.patch("/:id", async (req, res) => {
     }
   }
 
+  if (Object.keys(bookingToUpdate).length === 0) {
+    return res.status(400).json({message: "No fields to update"});
+  }
+
   try {
     let updated = await updateBooking(req.params.id, bookingToUpdate);
 
@@ -64,12 +68,13 @@ router.patch("/:id", async (req, res) => {
     }
     return res.json({message: "Booking updated successfully"});
   } catch (e) {
+    console.trace(e);
     return res.status(500).json({message: e.message});
   }
 });
 
 router.delete("/:id", async (req, res) => {
-  if (!req.params.id || Number.isNaN(req.params.id)) {
+  if (!req.params.id || Number.isNaN(Number(req.params.id))) {
     return res.status(400).json({message: "Invalid booking id"});
   }
 
