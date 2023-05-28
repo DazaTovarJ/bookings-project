@@ -1,7 +1,7 @@
-import { APIError } from "../exceptions/APIError";
+import { APIError } from "../exceptions/APIError.js";
 
 /**
- * 
+ *
  * @param {*} err error
  * @param {import("express").Request} req the request
  * @param {import("express").Response} res the response
@@ -11,13 +11,13 @@ export function errorHandler(err, req, res, next) {
   console.trace(err);
   if (!err instanceof APIError) {
     res.status(500).json({
-      message: "Server Error, try again later"
+      message: "Server Error, try again later",
     });
   } else {
     const customError = err;
     let response = {
-      message: customError.message
-    }
+      message: customError.message,
+    };
 
     if (customError.additionalInfo) {
       response.additionalInfo = customError.additionalInfo;
