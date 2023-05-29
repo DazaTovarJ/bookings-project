@@ -5,15 +5,15 @@ import { APIError } from "../exceptions/APIError.js";
  * @param {*} err error
  * @param {import("express").Request} req the request
  * @param {import("express").Response} res the response
- * @param {import("express").NextFunction} next the nect function
+ * @param {import("express").NextFunction} next the next function
  */
 export function errorHandler(err, req, res, next) {
   if (!err instanceof APIError) {
+    console.trace(err);
     res.status(500).json({
       message: "Server Error, try again later",
     });
   } else {
-    console.trace(err);
     const customError = err;
     let response = {
       message: customError.message,
