@@ -8,7 +8,7 @@ import { APIError } from "../exceptions/APIError.js";
  * @param {import("express").NextFunction} next the next function
  */
 export function errorHandler(err, req, res, next) {
-  if (!err instanceof APIError) {
+  if (!(err instanceof APIError)) {
     console.trace(err);
     res.status(500).json({
       message: "Server Error, try again later",
