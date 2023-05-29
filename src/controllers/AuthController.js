@@ -52,7 +52,7 @@ router.post(
 
 router.post(
   "/register",
-  [checkJWT],
+  [],
   asyncHandler(async (req, res, next) => {
     let { first_name, last_name, email, password } = req.body;
 
@@ -73,9 +73,8 @@ router.post(
 
 router.get(
   "/update-password",
-  [],
+  [passport.authenticate("jwt", { session: false })],
   asyncHandler(async (req, res, next) => {
-    const { sub } = req.token;
 
     const { oldPassword, newPassword } = req.body;
 
@@ -83,7 +82,7 @@ router.get(
       throw new ClientError("Either old or new password are missing");
     }
 
-    const user = getUserByEmail(sub);
+    const user = req.user;
 
     if (!user || !(await checkCredentials(user.id, oldPassword))) {
       throw new UnauthorizedError("Current password does not match");
