@@ -10,6 +10,7 @@ import { ClientError } from "../exceptions/ClientError.js";
 import { UnauthorizedError } from "../exceptions/UnauthorizedError.js";
 import { sign } from "../lib/JwtUtils.js";
 import appConfig from "../config/app.js";
+import { checkJWT } from "../middleware/check_jwt.js";
 
 const router = Router();
 
@@ -41,7 +42,7 @@ router.post(
 
 router.post(
   "/register",
-  [],
+  [checkJWT],
   asyncHandler(async (req, res, next) => {
     let { first_name, last_name, email, password } = req.body;
 
