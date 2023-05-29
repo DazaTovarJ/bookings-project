@@ -3,16 +3,17 @@ import { asyncHandler } from "../middleware/async_handler.js";
 import {
   changeCredentials,
   checkCredentials,
+  createUser,
   getUserByEmail,
 } from "../services/UserService.js";
 import { ClientError } from "../exceptions/ClientError.js";
 import { UnauthorizedError } from "../exceptions/UnauthorizedError.js";
-import { sign, verify } from "../lib/JwtUtils.js";
-import appConfig from "../config/app";
+import { sign } from "../lib/JwtUtils.js";
+import appConfig from "../config/app.js";
 
 const router = Router();
 
-router.get(
+router.post(
   "/login",
   [],
   asyncHandler(async (req, res, next) => {
@@ -35,6 +36,27 @@ router.get(
     });
 
     return res.status(200).json({ user, token, token_type: "Bearer" });
+  })
+);
+
+router.post(
+  "/register",
+  [],
+  asyncHandler(async (req, res, next) => {
+    let { first_name, last_name, email, password } = req.body;
+
+    if (!(first_name && last_name && email && password)) {
+      throw new ClientError("User data is required");
+    }
+
+    await createUser({
+      firstName: first_name,
+      lastName: last_name,
+      email,
+      password,
+    });
+
+    res.status(201).json({ message: "User registered successfully" });
   })
 );
 
