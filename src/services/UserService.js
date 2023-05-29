@@ -217,7 +217,7 @@ export async function checkCredentials(id, credential) {
     throw new ClientError("User not found");
   }
 
-  return await bcrypt.compare(credential, user.password);
+  return await bcrypt.compare(credential, user.user_password);
 }
 
 export async function changeCredentials(id, newCredential) {
