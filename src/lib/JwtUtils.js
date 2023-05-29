@@ -10,7 +10,7 @@ export async function sign(payload, options) {
     subject: options.subject,
     audience: options.audience,
     expiresIn: "1h",
-    algorithm: "RS256",
+    algorithm: "ES512",
   });
 }
 
@@ -23,7 +23,7 @@ export async function verify(token, options) {
       subject: options.subject,
       audience: options.audience,
       expiresIn: "1h",
-      algorithms: ["RS256"],
+      algorithms: ["ES512"],
     });
   } catch (error) {
     return false;
