@@ -22,6 +22,8 @@ const loginStrategy = new Strategy(
         return done(null, false, { message: "Invalid credentials" });
       }
 
+      delete user.user_password;
+
       return done(null, user, { message: "Logged in successfully" });
     } catch (error) {
       return done(error);
