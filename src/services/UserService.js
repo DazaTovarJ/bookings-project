@@ -64,7 +64,8 @@ export async function createUser(userToCreate) {
       throw new ClientError("User already exists");
     }
 
-    let sql = "INSERT INTO users SET ?";
+    let sql = `INSERT INTO users (email, user_password, given_name, family_name)
+                 VALUES (?, ?, ?, ?)`;
 
     const userToInsert = {
       email: userToCreate.email,
@@ -73,7 +74,7 @@ export async function createUser(userToCreate) {
       family_name: userToCreate.lastName,
     };
 
-    const [rows] = await connection.execute(sql, userToInsert);
+    const [rows] = await connection.execute(sql, Object.values(userToInsert));
 
     connection.unprepare(sql);
 
@@ -81,6 +82,7 @@ export async function createUser(userToCreate) {
 
     return rows;
   } catch (error) {
+    console.trace(error);
     await connection.rollback();
 
     if (error instanceof ClientError) {
