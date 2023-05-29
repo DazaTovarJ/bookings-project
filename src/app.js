@@ -6,6 +6,8 @@ import router from "./routes/index.js";
 import { errorHandler } from "./middleware/error_handler.js";
 // const routes = require('./routes');
 
+import("./auth/local_auth.js");
+
 const app = express();
 
 // Middleware

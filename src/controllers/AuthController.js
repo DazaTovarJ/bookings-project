@@ -11,6 +11,8 @@ import { UnauthorizedError } from "../exceptions/UnauthorizedError.js";
 import { sign } from "../lib/JwtUtils.js";
 import appConfig from "../config/app.js";
 import { checkJWT } from "../middleware/check_jwt.js";
+import passport from "passport";
+import { APIError } from "../exceptions/APIError.js";
 
 const router = Router();
 
@@ -18,25 +20,33 @@ router.post(
   "/login",
   [],
   asyncHandler(async (req, res, next) => {
-    const { email, password } = req.body;
+    passport.authenticate("login", async (err, user, info) => {
+      try {
+        if (err || !user) {
+          console.trace(err);
+          const error = new APIError("Could not log in", 500);
 
-    if (!(email && password)) {
-      throw new ClientError("Username and password are required");
-    }
+          return next(error);
+        }
 
-    const user = getUserByEmail(email);
+        req.logIn(user, { session: false }, async (error) => {
+          if (error) return next(error);
 
-    if (!user || !(await checkCredentials(user.id, password))) {
-      throw new UnauthorizedError("Invalid credentials");
-    }
+          const token = await sign(
+            { uid: user.id },
+            {
+              issuer: appConfig.jwt.issuer,
+              audience: appConfig.jwt.audience,
+              subject: user.email,
+            }
+          );
 
-    const token = await sign({
-      issuer: appConfig.jwt.issuer,
-      audience: appConfig.jwt.audience,
-      subject: user.email,
-    });
-
-    return res.status(200).json({ user, token, token_type: "Bearer" });
+          return res.status(200).json({ user, token, token_type: "Bearer" });
+        });
+      } catch (error) {
+        return next(error);
+      }
+    })(req, res, next);
   })
 );
 
