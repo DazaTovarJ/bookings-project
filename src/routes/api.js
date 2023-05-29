@@ -11,7 +11,11 @@ const apiRouter = Router();
 
 apiRouter.use(ensureJSONResponse);
 apiRouter.use("/bookings", bookingsRouter);
-apiRouter.use("/rooms", roomsRouter);
+apiRouter.use(
+  "/rooms",
+  passport.authenticate("jwt", { session: false }),
+  roomsRouter
+);
 apiRouter.use(
   "/users",
   passport.authenticate("jwt", { session: false }),
