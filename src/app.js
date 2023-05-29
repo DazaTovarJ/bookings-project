@@ -7,6 +7,7 @@ import { errorHandler } from "./middleware/error_handler.js";
 // const routes = require('./routes');
 
 import("./auth/local_auth.js");
+import("./auth/check_jwt.js");
 
 const app = express();
 
