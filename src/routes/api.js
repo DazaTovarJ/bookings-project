@@ -1,4 +1,6 @@
 import {Router} from "express";
+import passport from "passport";
+
 import {ensureJSONResponse} from "../middleware/force_json.js";
 import bookingsRouter from "../controllers/BookingsController.js";
 import roomsRouter from "../controllers/RoomsController.js";
@@ -10,7 +12,11 @@ const apiRouter = Router();
 apiRouter.use(ensureJSONResponse);
 apiRouter.use("/bookings", bookingsRouter);
 apiRouter.use("/rooms", roomsRouter);
-apiRouter.use("/users", userRouter);
+apiRouter.use(
+  "/users",
+  passport.authenticate("jwt", { session: false }),
+  userRouter
+);
 apiRouter.use("/auth", authRouter);
 
 apiRouter.all("*", (req, res) => {
