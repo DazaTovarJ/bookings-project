@@ -1,6 +1,11 @@
 import {Router} from "express";
 
-import { createRoom, getRoomById, getRooms } from "../services/RoomsService.js";
+import {
+  createRoom,
+  getRoomById,
+  getRooms,
+  updateRoom,
+} from "../services/RoomsService.js";
 import { asyncHandler } from "../middleware/async_handler.js";
 import { ClientError } from "../exceptions/ClientError.js";
 
@@ -58,6 +63,35 @@ router.post(
     });
 
     res.status(201).json({ message: "Room created" });
+  })
+);
+
+router.patch(
+  "/:id",
+  asyncHandler(async (req, res, next) => {
+    let { room_number, room_type, room_value } = req.body;
+
+    const id = req.params["id"];
+
+    if (!id || Number.isNaN(Number(id))) {
+      throw new ClientError("Invalid room");
+    }
+
+    if (!(room_number && room_type && room_value)) {
+      throw new ClientError("Missing required data");
+    }
+
+    if (room_value < 0) {
+      throw new ClientError("Invalid price");
+    }
+
+    await updateRoom(id, {
+      number: room_number,
+      type: room_type,
+      value: room_value,
+    });
+
+    res.status(200).json({ message: "Room updated" });
   })
 );
 
