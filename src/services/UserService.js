@@ -124,7 +124,7 @@ export async function updateUser(id, userToUpdate) {
       throw new ClientError("Email already taken.");
     }
 
-    let sql = "UPDATE users SET ? WHERE id = ?";
+    let sql = "UPDATE users SET ";
 
     const userToEdit = {
       email: userToUpdate.email,
@@ -138,7 +138,15 @@ export async function updateUser(id, userToUpdate) {
       }
     }
 
-    const [rows] = await connection.execute(sql, [userToEdit, id]);
+    sql += Object.entries(userToEdit)
+      .map(([key, value]) => `${key} = ?`)
+      .join(",");
+    sql += " WHERE id = ?";
+
+    const [rows] = await connection.execute(sql, [
+      ...Object.values(userToEdit),
+      id,
+    ]);
 
     connection.unprepare(sql);
 
