@@ -9,40 +9,43 @@ import {
 } from "../services/RoomsService.js";
 import { asyncHandler } from "../middleware/async_handler.js";
 import { ClientError } from "../exceptions/ClientError.js";
+import { NotFoundError } from "../exceptions/NotFoundError.js";
 
 const router = Router();
 
-router.get("/", async (req, res) => {
-  try {
+router.get(
+  "/",
+  asyncHandler(async (req, res) => {
     const rooms = await getRooms();
 
     if (rooms.length == 0) {
-      return res.status(404).json({ message: "No rooms found" });
+      throw new NotFoundError("No rooms found");
     }
 
-    res.json(rooms);
-  } catch (e) {
-    return res.status(500).json({ message: e.message });
-  }
-});
+    res
+      .status(200)
+      .json({ code: 200, data: rooms, message: "Query successful" });
+  })
+);
 
-router.get("/:id", async (req, res) => {
-  if (!req.params.id || Number.isNaN(req.params.id)) {
-    return res.status(400).json({ message: "Invalid booking id" });
-  }
+router.get(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    if (!req.params.id || Number.isNaN(req.params.id)) {
+      throw new ClientError("Invalid room");
+    }
 
-  try {
     const room = await getRoomById(req.params.id);
 
     if (!room) {
-      return res.status(404).json({ message: "Room not found" });
+      throw new NotFoundError("Room not found");
     }
 
-    return res.json(room);
-  } catch (e) {
-    return res.status(500).json({ message: e.message });
-  }
-});
+    return res
+      .status(200)
+      .json({ code: 200, data: room, message: "Query successful" });
+  })
+);
 
 router.post(
   "/",
@@ -63,7 +66,7 @@ router.post(
       value: room_value,
     });
 
-    res.status(201).json({ message: "Room created" });
+    res.status(201).json({ code: 201, message: "Room created" });
   })
 );
 
@@ -92,7 +95,7 @@ router.patch(
       value: room_value,
     });
 
-    res.status(200).json({ message: "Room updated" });
+    res.status(200).json({ code: 200, message: "Room updated" });
   })
 );
 
@@ -107,7 +110,7 @@ router.delete(
 
     await deleteRoom(id, req.user);
 
-    res.status(200).json({ message: "Room deleted successfully" });
+    res.status(200).json({ code: 200, message: "Room deleted successfully" });
   })
 );
 
