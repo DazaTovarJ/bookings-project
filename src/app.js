@@ -1,10 +1,11 @@
 // Create and export an express app
 // Dependencies
 import express from "express";
-import {appConfig} from "./config/index.js";
+import cors from "cors";
+
+import { appConfig } from "./config/index.js";
 import router from "./routes/index.js";
 import { errorHandler } from "./middleware/error_handler.js";
-// const routes = require('./routes');
 
 import("./auth/local_auth.js");
 import("./auth/check_jwt.js");
@@ -12,6 +13,11 @@ import("./auth/check_jwt.js");
 const app = express();
 
 // Middleware
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
