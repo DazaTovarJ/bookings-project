@@ -10,6 +10,7 @@ import {
 import { asyncHandler } from "../middleware/async_handler.js";
 import { ClientError } from "../exceptions/ClientError.js";
 import { NotFoundError } from "../exceptions/NotFoundError.js";
+import { getBookingsByRoom } from "../services/BookingsService.js";
 
 const router = Router();
 
@@ -46,6 +47,25 @@ router.get(
       .json({ code: 200, data: room, message: "Query successful" });
   })
 );
+
+router.get(
+  "/:id/bookings",
+  asyncHandler(async (req, res) => {
+    if (!req.params.id || Number.isNaN(req.params.id)) {
+      throw new ClientError("Invalid room");
+    }
+
+    const rooms = await getBookingsByRoom(req.params.id);
+
+    if (!rooms || rooms.length === 0) {
+      throw new NotFoundError("No bookings were found for this room");
+    }
+
+    return res
+      .status(200)
+      .json({ code: 200, data: rooms, message: "Query successful" });
+  })
+); 
 
 router.post(
   "/",
