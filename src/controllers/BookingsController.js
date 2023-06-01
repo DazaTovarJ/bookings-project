@@ -42,7 +42,7 @@ router.post(
       throw new ClientError("Check in date must be before check out date");
     }
 
-    await createBooking({
+    await createBooking(req.user, {
       client_name: name,
       client_phone: phone,
       booking_date,
@@ -110,7 +110,7 @@ router.delete(
       throw new ClientError("Invalid booking");
     }
 
-    await deleteBooking(req.params.id);
+    await deleteBooking(req.params.id, req.user);
 
     return res.status(200).json({ code: 200, message: "Booking deleted" });
   })

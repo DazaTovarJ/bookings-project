@@ -28,7 +28,11 @@ export async function getBookingsByRoom(roomId) {
   return bookings;
 }
 
-export async function createBooking(booking) {
+export async function createBooking(user, booking) {
+  if (!user) {
+    throw new ClientError("Who is performing this action?");
+  }
+
   if (!booking) {
     throw new ClientError("No booking data provided");
   }
@@ -37,10 +41,18 @@ export async function createBooking(booking) {
 
   await connection.beginTransaction();
   try {
-    const [result] = await connection.query(
-      "INSERT INTO bookings SET ?",
-      booking
-    );
+    let sql = `INSERT INTO bookings (client_name,
+                                     client_phone,
+                                     booking_date,
+                                     entry_date,
+                                     end_date,
+                                     room_id,
+                                     created_by)
+               VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    const [result] = await connection.execute(sql, [
+      ...Object.values(booking),
+      user.id,
+    ]);
 
     await connection.commit();
 
@@ -93,9 +105,13 @@ export async function updateBooking(id, booking) {
   }
 }
 
-export async function deleteBooking(id) {
+export async function deleteBooking(id, user) {
   if (!id) {
     throw new ClientError("No booking provided");
+  }
+
+  if (!user) {
+    throw new ClientError("Who is performing this action?");
   }
 
   const connection = await pool.getConnection();
@@ -103,8 +119,12 @@ export async function deleteBooking(id) {
   await connection.beginTransaction();
 
   try {
-    let sql = "UPDATE bookings SET active = FALSE, deleted_at = ? WHERE id = ?";
-    const [result] = await connection.execute(sql, [new Date(), id]);
+    let sql = `UPDATE bookings
+               SET active = FALSE,
+                   deleted_at = ?,
+                   deleted_by = ?
+               WHERE id = ?`;
+    const [result] = await connection.execute(sql, [new Date(), user.id, id]);
 
     connection.unprepare(sql);
 
