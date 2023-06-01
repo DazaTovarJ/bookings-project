@@ -11,11 +11,15 @@ export function errorHandler(err, req, res, next) {
   if (!(err instanceof APIError)) {
     console.trace(err);
     res.status(500).json({
+      code: 500,
+      data: null,
       message: "Server Error, try again later",
     });
   } else {
     const customError = err;
     let response = {
+      code: customError.status,
+      data: null,
       message: customError.message,
     };
 
