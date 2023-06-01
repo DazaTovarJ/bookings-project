@@ -2,16 +2,49 @@ import {Router} from "express";
 import {
   createBooking,
   deleteBooking,
+  getBookingById,
+  getBookings,
   updateBooking,
 } from "../services/BookingsService.js";
 import { ClientError } from "../exceptions/ClientError.js";
 import { asyncHandler } from "../middleware/async_handler.js";
+import { NotFoundError } from "../exceptions/NotFoundError.js";
 
 const router = Router();
 
-router.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+router.get(
+  "/",
+  asyncHandler(async (req, res) => {
+    const bookings = await getBookings();
+
+    if (!bookings || bookings.length == 0) {
+      throw new NotFoundError("No bookings found");
+    }
+
+    res
+      .status(200)
+      .json({ code: 200, data: bookings, message: "Query successful" });
+  })
+);
+
+router.get(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    if (!req.params.id || Number.isNaN(req.params.id)) {
+      throw new ClientError("Invalid room");
+    }
+
+    const booking = await getBookingById(req.params.id);
+
+    if (!booking) {
+      throw new NotFoundError("Room not found");
+    }
+
+    return res
+      .status(200)
+      .json({ code: 200, data: booking, message: "Query successful" });
+  })
+);
 
 router.post(
   "/",
