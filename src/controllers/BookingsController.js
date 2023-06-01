@@ -64,24 +64,19 @@ router.patch(
 
     const { name, phone, booking_date, check_in, check_out, room } = req.body;
 
-    if (
-      booking_date != undefined &&
-      new Date(booking_date).toString() === "Invalid Date"
-    ) {
+    if (!(name || phone || booking_date || check_in || check_out || room)) {
+      throw new ClientError("No data to update");
+    }
+
+    if (new Date(booking_date).toString() === "Invalid Date") {
       throw new ClientError("Invalid booking date");
     }
 
-    if (
-      check_in != undefined &&
-      new Date(check_in).toString() === "Invalid Date"
-    ) {
+    if (new Date(check_in).toString() === "Invalid Date") {
       throw new ClientError("Invalid check in date");
     }
 
-    if (
-      check_out != undefined &&
-      new Date(check_out).toString() === "Invalid Date"
-    ) {
+    if (new Date(check_out).toString() === "Invalid Date") {
       throw new ClientError("Invalid check out date");
     }
 
@@ -98,10 +93,6 @@ router.patch(
       if (bookingToUpdate[key] === undefined) {
         delete bookingToUpdate[key];
       }
-    }
-
-    if (Object.keys(bookingToUpdate).length === 0) {
-      throw new ClientError("No fields to update");
     }
 
     await updateBooking(req.params.id, bookingToUpdate);
