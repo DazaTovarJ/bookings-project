@@ -105,3 +105,48 @@ export async function updateRoom(id, roomToUpdate) {
     connection.release();
   }
 }
+
+export async function deleteRoom(id, user) {
+  if (!id) {
+    throw new ClientError("No user provided");
+  }
+
+  if (!user) {
+    throw new ClientError("Who is doing this action?");
+  }
+
+  const connection = await pool.getConnection();
+
+  await connection.beginTransaction();
+  try {
+    const room = await getRoomById(id);
+
+    if (!room) {
+      throw new ClientError("Room does not exist");
+    }
+
+    let sql = `UPDATE rooms SET
+               deleted_at = ?,
+               deleted_by = ?,
+               active = FALSE
+               WHERE id = ?`;
+
+    const [rows] = await connection.execute(sql, [new Date(), user.id, id]);
+
+    connection.unprepare(sql);
+
+    await connection.commit();
+
+    return rows;
+  } catch (error) {
+    await connection.rollback();
+
+    if (error instanceof ClientError) {
+      throw error;
+    }
+
+    throw new APIError("Could not delete room", 500);
+  } finally {
+    connection.release();
+  }
+}

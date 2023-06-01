@@ -2,6 +2,7 @@ import {Router} from "express";
 
 import {
   createRoom,
+  deleteRoom,
   getRoomById,
   getRooms,
   updateRoom,
@@ -92,6 +93,21 @@ router.patch(
     });
 
     res.status(200).json({ message: "Room updated" });
+  })
+);
+
+router.delete(
+  "/:id",
+  asyncHandler(async (req, res, next) => {
+    const id = req.params["id"];
+
+    if (!id || Number.isNaN(Number(id))) {
+      throw new ClientError("Invalid room");
+    }
+
+    await deleteRoom(id, req.user);
+
+    res.status(200).json({ message: "Room deleted successfully" });
   })
 );
 
