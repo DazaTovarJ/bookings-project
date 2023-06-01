@@ -181,20 +181,9 @@ export async function deleteUser(id) {
       throw new ClientError("User does not exist");
     }
 
-    let sql = "UPDATE users SET ? WHERE id = ?";
+    let sql = "UPDATE users SET deleted_at = ?, active = FALSE WHERE id = ?";
 
-    const userToEdit = {
-      deleted_at: new Date(),
-      active: false,
-    };
-
-    for (let key in userToEdit) {
-      if (userToEdit[key] === undefined) {
-        delete userToEdit[key];
-      }
-    }
-
-    const [rows] = await connection.execute(sql, [userToEdit, id]);
+    const [rows] = await connection.execute(sql, [new Date(), id]);
 
     connection.unprepare(sql);
 
