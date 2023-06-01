@@ -78,8 +78,8 @@ router.patch(
       throw new ClientError("Invalid room");
     }
 
-    if (!(room_number && room_type && room_value)) {
-      throw new ClientError("Missing required data");
+    if (!(room_number || room_type || room_value)) {
+      throw new ClientError("Missing data");
     }
 
     if (room_value < 0) {
