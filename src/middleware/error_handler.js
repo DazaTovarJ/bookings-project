@@ -1,23 +1,27 @@
-import { APIError } from "../exceptions/APIError";
+import { APIError } from "../exceptions/APIError.js";
 
 /**
- * 
+ *
  * @param {*} err error
  * @param {import("express").Request} req the request
  * @param {import("express").Response} res the response
- * @param {import("express").NextFunction} next the nect function
+ * @param {import("express").NextFunction} next the next function
  */
 export function errorHandler(err, req, res, next) {
-  console.trace(err);
-  if (!err instanceof APIError) {
+  if (!(err instanceof APIError)) {
+    console.trace(err);
     res.status(500).json({
-      message: "Server Error, try again later"
+      code: 500,
+      data: null,
+      message: "Server Error, try again later",
     });
   } else {
     const customError = err;
     let response = {
-      message: customError.message
-    }
+      code: customError.status,
+      data: null,
+      message: customError.message,
+    };
 
     if (customError.additionalInfo) {
       response.additionalInfo = customError.additionalInfo;
