@@ -4,36 +4,29 @@
 name: Node.js CI
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
-
-  workflow_dispatch:
-
+    types:
+      - closed
+    branches: 
+      - "main"
 jobs:
-  build:
-
+  deploy:
+    if: github.event.pull_request.merged == true
+    name: Deploy to server on master
     runs-on: ubuntu-latest
-    
-    if: github.ref == 'refs/heads/main'
-
     strategy:
       matrix:
         node-version: [16.x, 18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
-    - uses: actions/checkout@v3
-    - run: npm ci
-    - run: npm run build --if-present
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: burnett01/rsync-deployments@5.1
-      with:
-          switches: -avzr --delete
-          path: ./*
-          remote_path: /var/www/html/web2.dazadev.online
-          remote_host: ec2-34-224-220-225.compute-1.amazonaws.com
-          remote_user: ubuntu
-          remote_key: "${{ secrets.SSH_PRIVATE_KEY }}"
+    - name: "Checkout files"
+      uses: actions/checkout@v3
+  
+    - name: Deploy to server
+      uses: easingthemes/ssh-deploy@main
+      env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_KEY }}
+          REMOTE_HOST: ${{ secrets.SERVER_HOST }}
+          REMOTE_USER: ${{ secrets.SERVER_USERNAME }}
+          TARGET: ${{ secrets.SERVER_DEPLOY_TARGET }}
     
