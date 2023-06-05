@@ -93,10 +93,11 @@ export async function updateBooking(id, booking) {
 
     return result.affectedRows === 1;
   } catch (e) {
+    console.trace(e);
     await connection.rollback();
 
-    if (error instanceof ClientError) {
-      throw error;
+    if (e instanceof ClientError) {
+      throw e;
     }
 
     throw new APIError("Could not update booking", 500);

@@ -22,7 +22,7 @@ router.post(
   asyncHandler(async (req, res, next) => {
     passport.authenticate("login", async (err, user, info) => {
       try {
-        if (err || !user) {
+        if ((err & err != null) || !user) {
           console.trace(err);
           const error = new APIError("Could not log in", 500);
 
