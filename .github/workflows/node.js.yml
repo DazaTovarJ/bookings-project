@@ -29,8 +29,8 @@ jobs:
         node-version: [18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
-    - name: configure aws credentials
-      uses: aws-actions/configure-aws-credentials@v1.7.0
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4.0.1
       with:
         role-to-assume: arn:aws:iam::160365616731:role/GithubActions-AssumeRoleWithActions #change to reflect your IAM role’s ARN
         role-session-name: GitHub_to_AWS_via_FederatedOIDC
