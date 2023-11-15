@@ -60,8 +60,8 @@ export async function createBooking(user, booking) {
   } catch (e) {
     await connection.rollback();
 
-    if (error instanceof ClientError) {
-      throw error;
+    if (e instanceof ClientError) {
+      throw e;
     }
 
     throw new APIError("Could not create booking", 500);
