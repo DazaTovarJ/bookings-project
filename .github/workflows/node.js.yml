@@ -9,12 +9,6 @@ on:
       - closed
     branches: 
       - "main"
-env:
-  AWS_REGION: "us-west-2"
-  SERVER_KEY: ${{secrets.SERVER_KEY}}
-  SERVER_HOST: ${{secrets.SERVER_HOST}}
-  SERVER_USERNAME: ${{secrets.SERVER_USERNAME}}
-  SERVER_DEPLOY_TARGET: ${{secrets.SERVER_DEPLOY_TARGET}}
 permissions:
   id-token: write
   contents: read
@@ -32,13 +26,9 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4.0.1
       with:
-        role-to-assume: arn:aws:iam::160365616731:role/GithubActions-AssumeRoleWithActions #change to reflect your IAM role’s ARN
+        role-to-assume:  ${{secrets.AWS_ROLE}}
         role-session-name: GitHub_to_AWS_via_FederatedOIDC
-        aws-region: ${{ env.AWS_REGION }}
-    - name: Sts GetCallerIdentity
-      run: |
-          aws sts get-caller-identity
-  
+        aws-region: ${{ vars.AWS_DEFAULT_REGION }}
     - name: Get Public IP
       id: ip
       uses: haythem/public-ip@v1.3
