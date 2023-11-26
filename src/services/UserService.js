@@ -4,9 +4,10 @@ import pool from "../database/connection.js";
 import { APIError } from "../exceptions/APIError.js";
 import { ClientError } from "../exceptions/ClientError.js";
 import { NotFoundError } from "../exceptions/NotFoundError.js";
+import {UnauthorizedError} from "../exceptions/UnauthorizedError.js";
 
 function generateSafeCopy(user) {
-  const _user = { ...user };
+  const _user = {...user};
 
   delete _user.password;
 
@@ -76,7 +77,13 @@ export async function createUser(userToCreate) {
 
     const [rows] = await connection.execute(sql, Object.values(userToInsert));
 
+    let roleSql = `INSERT INTO users_roles (user_id, role_id)
+                     VALUES (?, ?)`;
+
+    await connection.execute(roleSql, [rows.insertId, 2]);
+
     connection.unprepare(sql);
+    connection.unprepare(roleSql);
 
     await connection.commit();
 
@@ -257,5 +264,42 @@ export async function changeCredentials(id, newCredential) {
     throw new APIError("Could not create user", 500);
   } finally {
     connection.release();
+  }
+}
+
+export async function checkPermissions(user, resource) {
+  if (!user) {
+    throw new ClientError("No user provided");
+  }
+
+  if (!resource) {
+    throw new ClientError("No resource provided");
+  }
+
+  if (!user.id) {
+    throw new ClientError("No user id provided");
+  }
+  try {
+    const userById = await getUserById(user.id);
+
+    if (!userById) {
+      throw new ClientError("User does not exist");
+    }
+
+    let sql = `SELECT r.id, rr.access_level
+               FROM users_roles ur
+               INNER JOIN roles_resources rr ON rr.role_id = ur.role_id
+               INNER JOIN resources r ON rr.resource_id = r.id
+               WHERE ur.user_id = ? AND r.resource_name = ?`;
+    const [rows] = await pool.query(sql, [userById.id, resource]);
+
+    return rows;
+  } catch (error) {
+    console.log(error);
+    if (error instanceof ClientError) {
+      throw error;
+    }
+
+    throw new UnauthorizedError("Non authorized");
   }
 }
