@@ -67,7 +67,7 @@ router.post(
       throw new ClientError("Invalid check out date");
     }
 
-    if (new Date(booking_date) >= new Date()) {
+    if (new Date(booking_date) <= new Date()) {
       throw new ClientError("Booking date must be in the future");
     }
 
