@@ -1,11 +1,20 @@
 import pool from "../database/connection.js";
 import { APIError } from "../exceptions/APIError.js";
 import { ClientError } from "../exceptions/ClientError.js";
+import {getRoomById} from "./RoomsService.js";
 
 export async function getBookings() {
   const [bookings] = await pool.query(
-    "SELECT * FROM bookings WHERE active = TRUE"
+    "SELECT * FROM bookings WHERE active = TRUE",
   );
+
+  for (const booking of bookings) {
+    console.log(booking);
+    const room = await getRoomById(booking.room_id);
+
+    delete booking.room_id;
+    booking.room = room;
+  }
 
   return bookings;
 }
@@ -15,8 +24,13 @@ export async function getBookingById(id) {
     "SELECT * FROM bookings WHERE id = ? AND active = TRUE",
     [id]
   );
+  const booking = bookings[0];
+  const room = await getRoomById(booking.room_id);
 
-  return bookings[0];
+  delete booking.room_id;
+  booking.room = room;
+
+  return booking;
 }
 
 export async function getBookingsByRoom(roomId) {
