@@ -1,6 +1,7 @@
 import pool from "../database/connection.js";
 import { APIError } from "../exceptions/APIError.js";
 import { ClientError } from "../exceptions/ClientError.js";
+import {getBookingsByRoom} from "./BookingsService.js";
 
 export async function getRooms() {
   const [rooms] = await pool.query("SELECT * FROM rooms WHERE active = TRUE");
@@ -11,7 +12,7 @@ export async function getRooms() {
 export async function getRoomById(id) {
   const [rooms] = await pool.query(
     "SELECT * FROM rooms WHERE id = ? AND active = TRUE",
-    [id]
+    [id],
   );
 
   return rooms[0];
@@ -125,6 +126,12 @@ export async function deleteRoom(id, user) {
       throw new ClientError("Room does not exist");
     }
 
+    const pendingBookings = await getBookingsByRoom(id);
+
+    if (pendingBookings.length > 0) {
+      throw new APIError("There are pending bookings for this room", 412);
+    }
+
     let sql = `UPDATE rooms SET
                deleted_at = ?,
                deleted_by = ?,
@@ -145,7 +152,10 @@ export async function deleteRoom(id, user) {
       throw error;
     }
 
-    throw new APIError("Could not delete room", 500);
+    throw new APIError(
+      error.message || "Could not delete room",
+      error.status || 500,
+    );
   } finally {
     connection.release();
   }
