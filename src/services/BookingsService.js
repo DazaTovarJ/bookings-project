@@ -9,7 +9,6 @@ export async function getBookings() {
   );
 
   for (const booking of bookings) {
-    console.log(booking);
     const room = await getRoomById(booking.room_id);
 
     delete booking.room_id;

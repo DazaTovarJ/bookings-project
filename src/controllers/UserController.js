@@ -14,8 +14,10 @@ router.get(
   asyncHandler(async (req, res, next) => {
     const users = await getAllUsers();
 
-    return res.status(200).json(users);
-  })
+    return res
+      .status(200)
+      .json({code: 200, data: users, message: "Query successful"});
+  }),
 );
 
 router.get(
@@ -25,8 +27,10 @@ router.get(
 
     const user = await getUserById(id);
 
-    return res.status(200).json(user);
-  })
+    return res
+      .status(200)
+      .json({code: 200, data: user, message: "Query successful"});
+  }),
 );
 
 router.patch(
@@ -34,12 +38,14 @@ router.patch(
   asyncHandler(async (req, res, next) => {
     const id = req.params["id"];
 
-    const { firstName, lastName, email } = req.body;
+    const {firstName, lastName, email} = req.body;
 
-    await updateUser(id, { firstName, lastName, email });
+    await updateUser(id, {firstName, lastName, email});
 
-    return res.status(200).json({ message: "User successfully updated" });
-  })
+    return res
+      .status(200)
+      .json({code: 200, message: "User successfully updated"});
+  }),
 );
 
 router.delete(
@@ -49,8 +55,10 @@ router.delete(
 
     await deleteUser(id);
 
-    return res.status(200).json({ message: "User successfully deleted" });
-  })
+    return res
+      .status(200)
+      .json({code: 200, message: "User successfully deleted"});
+  }),
 );
 
 export default router;
