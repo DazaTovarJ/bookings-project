@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/DazaTovarJ/bookings-project#readme",
   "dependencies": {
-    "bcrypt": "^5.1.0",
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.22.1",
@@ -33,6 +33,6 @@
     "passport-local": "^1.0.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "nodemon": "^3.1.14"
   }
 }
